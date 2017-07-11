@@ -1,0 +1,36 @@
+.reveal section p {
+  text-align: left;
+}
+
+.reveal section img {
+  background:none;
+  border:none;
+  box-shadow:none;
+}
+
+.reveal .left {
+  left:-8.33%;
+  float: left;
+  width:50%;
+}
+
+.reveal .right {
+  left:31.25%;
+  float: right;
+  width:50%;
+}
+
+/* #the-important-point {
+    background-image: url(../images/PIRATEGRUNT.png);
+    background-size: 125px;
+    background-repeat: no-repeat;
+    background-position: top right;
+}*/
+
+.reveal .slide-background.present {
+    background-image: url(../images/PIRATEGRUNT.png);
+    background-size: 200px;
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    transition: none;
+}

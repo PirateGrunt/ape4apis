@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Brian A. Fannin" />
+  <meta name="dcterms.date" content="2017-03-11" />
+  <title>Go Ape for APIs</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/theme/solarized.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <link rel="stylesheet" href="css/revealOpts.css"/>
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Go Ape for APIs</h1>
+    <h2 class="author">Brian A. Fannin</h2>
+    <h3 class="date">March 11, 2017</h3>
+</section>
+
+<section><section id="what-do-we-mean-by-api" class="titleslide slide level1"><h1>What do we mean by API?</h1></section><section id="in-this-context" class="slide level2">
+<h1>In this context</h1>
+<blockquote>
+<p>An API is something I use to retrieve and (maybe) update data.</p>
+</blockquote>
+<p><img src="images/data_api.png" alt="data api" /></p>
+<aside class="notes">
+<ul>
+<li>Lots of things from graphics to the file system. ODBC is an API.</li>
+<li>Data heads mean CRUD, or even just reading</li>
+</ul>
+<p>An API can be lots of things, from a graphics engine, to DLLs, to the OS-dependent things like the file system.</p>
+When data heads are talking about an API, they often mean an abstract interface which gives them the ability to extract data from a remote source. That’s generic enough that ODBC qualifies as an API.
+</aside>
+</section><section id="the-important-point" class="slide level2">
+<h1>The important point:</h1>
+<blockquote>
+<p>The implementation details about how data is accessed and returned to the user are not important to the consumer of the API.</p>
+</blockquote>
+<p>It just works.</p>
+<aside class="notes">
+So, we don’t really care
+</aside>
+</section><section id="example" class="slide level2">
+<h1>Example</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(udapi)
+dfUD &lt;-<span class="st"> </span>udapi::<span class="kw">get_term</span>(<span class="st">&quot;depp&quot;</span>)
+dfUD$definition[<span class="dv">1</span>:<span class="dv">2</span>]</code></pre></div>
+<pre><code>## [1] &quot;In German: Village Idiot or just idiot.&quot;                                   
+## [2] &quot;German. Mild insult refering to a person who lacks intelligence. An idiot.&quot;</code></pre>
+</section><section id="basically-the-same-as-this" class="slide level2">
+<h1>Basically the same as this</h1>
+<p><img src="images/urban_dictionary.png" alt="urban dictionary" /></p>
+</section><section id="web-apis" class="slide level2">
+<h1>Web APIs</h1>
+<aside class="notes">
+So, there’s a wide array of data on the web and many different ways to access it. What’s the common denominator?
+</aside>
+<blockquote>
+<p>“Right now, the closest thing we have to a generic API client is a library that sends HTTP requests. This was true in 2007, and it’s still true.”</p>
+</blockquote>
+<p>- RESTful Web APIs</p>
+</section></section>
+<section><section id="how-does-http-work" class="titleslide slide level1"><h1>How does HTTP work?</h1></section><section id="your-grandfather-explains-the-internet" class="slide level2">
+<h1>Your grandfather explains the internet</h1>
+<p><img src="images/http.png" alt="http" /></p>
+</section><section id="implications" class="slide level2">
+<h1>Implications</h1>
+<ul>
+<li>Transactional and discrete. A computer sends a <strong>request</strong> to another computer, which sends back a <strong>response</strong>. End.</li>
+<li>Stateless, like talking to a really drunk person. You have to keep reintroducing yourselves.</li>
+<li>May be asynchronous.</li>
+<li>Probably overheard. Use encryption.</li>
+<li>In principle, client and server are not special. In practice, we’re usually clients. We send requests and get back responses.</li>
+<li>Request and response may be broader than information retrieval. May also involve <em>transformation</em> of data like language translation, or model construction (e.g. statistical transformations).</li>
+</ul>
+<aside class="notes">
+A computer - which we’ll call a client - sends a request to another computer that we’ll call a server. The names are somewhat arbitrary. The roles of client and server could be reversed.
+</aside>
+</section><section id="the-request" class="slide level2">
+<h1>The request</h1>
+<p><span class="left"> <img src="images/request2.png" alt="request structure" /> </span></p>
+<span class="right">
+<ul>
+<li>
+URL - obvious
+</li>
+<li>
+Method - GET, PUT, etc. More on that in a moment.
+</li>
+<li>
+Header - Tells the remote computer about how to handle the request. Includes timestamp, source of the request, user and session info. May include authentication data.
+</li>
+<li>
+Body - If we’re <em>adding</em> or <em>updating</em> data, there’s information here.
+</li>
+</ul>
+<p></span></p>
+</section><section id="methods" class="slide level2">
+<h1>Methods</h1>
+<table style="width:56%;">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">GET</td>
+<td style="text-align: left;">Retrieves a resource</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">POST</td>
+<td style="text-align: left;">Create a new resource</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PUT</td>
+<td style="text-align: left;">Update an existing resource</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PATCH</td>
+<td style="text-align: left;">Similar to PUT, but may update only certain components of a resource</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DELETE</td>
+<td style="text-align: left;">Remove a resource</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HEAD</td>
+<td style="text-align: left;">Identical to GET, but does not return body</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OPTIONS</td>
+<td style="text-align: left;">Request information about the server</td>
+</tr>
+</tbody>
+</table>
+<p>And there are others.</p>
+<aside class="notes">
+The methods are verbs which encompass the full set of CRUD operations. Permissions will be specific to a server.
+</aside>
+</section><section id="the-response" class="slide level2">
+<h1>The response</h1>
+<p><span class="left"> <img src="images/response_structure.png" alt="response structure" /> </span></p>
+<span class="right">
+<ul>
+<li>
+Status code - This is important.
+</li>
+<li>
+Header - Tells the requesting computer about how to handle the response. This will include things like format of the data.
+</li>
+<li>
+Body - This is the good stuff. For data requests, we’re probably returning XML, JSON or CSV.
+</li>
+</ul>
+<p></span></p>
+</section><section id="response-status-codes" class="slide level2">
+<h1>Response status codes</h1>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Number</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1xx</td>
+<td style="text-align: left;">Informational</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2xx</td>
+<td style="text-align: left;">Success</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3xx</td>
+<td style="text-align: left;">Redirection</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4xx</td>
+<td style="text-align: left;">Client error</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5xx</td>
+<td style="text-align: left;">Server error</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://httpstatuses.com" class="uri">https://httpstatuses.com</a></p>
+</section><section id="this-may-all-be-done-from-a-terminal" class="slide level2">
+<h1>This may all be done from a terminal</h1>
+<pre><code>curl &quot;https://www.goodreads.com/search.xml?key=MY_KEY&amp;q=Richard+Feynman&quot;</code></pre>
+</section><section id="or-in-a-browser" class="slide level2">
+<h1>Or in a browser</h1>
+<p><img src="images/browser_response.png" alt="browser response" /></p>
+</section><section id="postman" class="slide level2">
+<h1>Postman</h1>
+<p><img src="images/postman.png" alt="postman example" /></p>
+</section><section id="postman-example" class="slide level2">
+<h1>Postman example</h1>
+<p><img src="images/postman_example.png" alt="postman example" /></p>
+</section><section id="fundamental-takeaways" class="slide level2">
+<h1>Fundamental takeaways</h1>
+<ul>
+<li>A web API lets us read data without needing to know how the data is obtained.</li>
+<li>Request and response objects tell <em>both</em> computers everything they need to know about how the conversation is going.</li>
+<li>There is nothing magical about how to access a web API. If you can connect to the interwebs, you’re good to go. <em>A browser is a tool that makes HTTP response objects look pretty!</em></li>
+</ul>
+</section></section>
+<section><section id="some-actual-apis" class="titleslide slide level1"><h1>Some actual APIs</h1></section><section id="rsunlight" class="slide level2">
+<h1>rsunlight</h1>
+<div style="height:400px">
+<p><img src="images/sunlight_api_calls.png" alt="sunlight_calls" /></p>
+</div>
+</section><section id="section" class="slide level2">
+<h1></h1>
+</section><section id="where-to-find-apis" class="slide level2">
+<h1>Where to find APIs</h1>
+<ul>
+<li><a href="https://www.programmableweb.com/category/all/apis">Programmable Web</a> has a list of over 17,000 APIs!</li>
+<li><a href="http://www.pythonforbeginners.com/api/list-of-python-apis">Python for beginners</a> - Not a big list, but all have Python wrappers</li>
+<li><a href="http://ropengov.github.io/">rOpenGov</a></li>
+<li><a href="https://cran.r-project.org/package=httr">Reverse dependencies for httr</a></li>
+</ul>
+</section></section>
+<section><section id="the-httr-package" class="titleslide slide level1"><h1>The httr package</h1></section><section id="the-httr-package-1" class="slide level2">
+<h1>The httr package</h1>
+<ul>
+<li>Strongly influenced by the python package <a href="http://docs.python-requests.org/en/latest/user/quickstart/"><code>requests</code></a>.</li>
+<li>Exposes GET, PUT, PUSH, etc as R functions</li>
+</ul>
+</section><section id="lets-access-some-data" class="slide level2">
+<h1>Let’s access some data!</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(httr)
+
+base_url &lt;-<span class="st"> &#39;http://nflarrest.com/api/v1/&#39;</span>
+crimes_url &lt;-<span class="st"> </span><span class="kw">paste0</span>(base_url, <span class="st">&#39;crime&#39;</span>)
+response &lt;-<span class="st"> </span><span class="kw">GET</span>(crimes_url)</code></pre></div>
+</section><section id="the-response-object" class="slide level2">
+<h1>The response object</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">response</code></pre></div>
+<pre><code>## Response [http://nflarrest.com/api/v1/crime]
+##   Date: 2017-06-20 22:38
+##   Status: 200
+##   Content-Type: application/json
+##   Size: 5.03 kB</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">response$status_code</code></pre></div>
+<pre><code>## [1] 200</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">response$headers$<span class="st">`</span><span class="dt">content-type</span><span class="st">`</span></code></pre></div>
+<pre><code>## [1] &quot;application/json&quot;</code></pre>
+</section><section id="what-did-our-request-look-like" class="slide level2">
+<h1>What did our request look like?</h1>
+<p>Weirdly, we need to get a response to see this.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">req &lt;-<span class="st"> </span>response$request
+req</code></pre></div>
+<pre><code>## &lt;request&gt;
+## GET http://nflarrest.com/api/v1/crime
+## Output: write_memory
+## Options:
+## * useragent: libcurl/7.47.0 r-curl/2.6 httr/1.2.1
+## * httpget: TRUE
+## Headers:
+## * Accept: application/json, text/xml, application/xml, */*</code></pre>
+</section><section id="adding-elements-to-the-request-header" class="slide level2">
+<h1>Adding elements to the request header</h1>
+<p>This must take place within the HTTP verb function call</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">response &lt;-<span class="st"> </span><span class="kw">GET</span>(crimes_url
+                , <span class="kw">user_agent</span>(<span class="st">&quot;PirateGrunt/0.1 (FanninQED@Yahoo.com)&quot;</span>))</code></pre></div>
+</section><section id="common-header-fields" class="slide level2">
+<h1>Common header fields</h1>
+<ul>
+<li>authenticate() - Named parameters for user, password and auth type. Default type is basic</li>
+<li>user_agent() - <code>httr</code> will default to some form of “httr”</li>
+<li>use_proxy()</li>
+<li>set_cookies()</li>
+</ul>
+</section><section id="content" class="slide level2">
+<h1>content</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">the_content &lt;-<span class="st"> </span><span class="kw">content</span>(response, <span class="st">&quot;text&quot;</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)
+<span class="kw">typeof</span>(the_content)</code></pre></div>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">the_content</code></pre></div>
+<pre><code>## [1] &quot;[{\&quot;Category\&quot;:\&quot;DUI\&quot;,\&quot;arrest_count\&quot;:\&quot;186\&quot;},{\&quot;Category\&quot;:\&quot;Drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;93\&quot;},{\&quot;Category\&quot;:\&quot;Domestic violence\&quot;,\&quot;arrest_count\&quot;:\&quot;84\&quot;},{\&quot;Category\&quot;:\&quot;Assault\&quot;,\&quot;arrest_count\&quot;:\&quot;63\&quot;},{\&quot;Category\&quot;:\&quot;Disorderly conduct\&quot;,\&quot;arrest_count\&quot;:\&quot;38\&quot;},{\&quot;Category\&quot;:\&quot;Gun\&quot;,\&quot;arrest_count\&quot;:\&quot;25\&quot;},{\&quot;Category\&quot;:\&quot;License\&quot;,\&quot;arrest_count\&quot;:\&quot;17\&quot;},{\&quot;Category\&quot;:\&quot;Reckless driving\&quot;,\&quot;arrest_count\&quot;:\&quot;15\&quot;},{\&quot;Category\&quot;:\&quot;Alcohol\&quot;,\&quot;arrest_count\&quot;:\&quot;14\&quot;},{\&quot;Category\&quot;:\&quot;Resisting arrest\&quot;,\&quot;arrest_count\&quot;:\&quot;14\&quot;},{\&quot;Category\&quot;:\&quot;Battery\&quot;,\&quot;arrest_count\&quot;:\&quot;14\&quot;},{\&quot;Category\&quot;:\&quot;Theft\&quot;,\&quot;arrest_count\&quot;:\&quot;14\&quot;},{\&quot;Category\&quot;:\&quot;Public intoxication\&quot;,\&quot;arrest_count\&quot;:\&quot;14\&quot;},{\&quot;Category\&quot;:\&quot;DUI, drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;10\&quot;},{\&quot;Category\&quot;:\&quot;Outstanding warrant\&quot;,\&quot;arrest_count\&quot;:\&quot;8\&quot;},{\&quot;Category\&quot;:\&quot;Assault, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;6\&quot;},{\&quot;Category\&quot;:\&quot;Drugs, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;6\&quot;},{\&quot;Category\&quot;:\&quot;Failure to appear\&quot;,\&quot;arrest_count\&quot;:\&quot;6\&quot;},{\&quot;Category\&quot;:\&quot;Trespassing\&quot;,\&quot;arrest_count\&quot;:\&quot;5\&quot;},{\&quot;Category\&quot;:\&quot;Sex\&quot;,\&quot;arrest_count\&quot;:\&quot;5\&quot;},{\&quot;Category\&quot;:\&quot;Obstruction\&quot;,\&quot;arrest_count\&quot;:\&quot;5\&quot;},{\&quot;Category\&quot;:\&quot;Violating court order\&quot;,\&quot;arrest_count\&quot;:\&quot;5\&quot;},{\&quot;Category\&quot;:\&quot;Gun, drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;4\&quot;},{\&quot;Category\&quot;:\&quot;Sexual assault\&quot;,\&quot;arrest_count\&quot;:\&quot;4\&quot;},{\&quot;Category\&quot;:\&quot;Disorderly conduct, sex\&quot;,\&quot;arrest_count\&quot;:\&quot;4\&quot;},{\&quot;Category\&quot;:\&quot;Animal abuse\&quot;,\&quot;arrest_count\&quot;:\&quot;3\&quot;},{\&quot;Category\&quot;:\&quot;Solicitation\&quot;,\&quot;arrest_count\&quot;:\&quot;3\&quot;},{\&quot;Category\&quot;:\&quot;Probation violation\&quot;,\&quot;arrest_count\&quot;:\&quot;3\&quot;},{\&quot;Category\&quot;:\&quot;DUI, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Harassment\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Assault, alcohol\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Manslaughter\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Murder, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Criminal mischief\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Disorderly conduct, alcoh\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Domestic violence, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;Burglary\&quot;,\&quot;arrest_count\&quot;:\&quot;2\&quot;},{\&quot;Category\&quot;:\&quot;DUI, assault\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Sexual battery\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Reckless driving, drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Domestic dispute\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Eluding police\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Alcohol, disorderly condu\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;DUI, drugs, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Dogfighting\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Hit-and-run\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Domestic\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Evading arrest\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Evading police\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Domestic violence, rape\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Property destruction\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Child support\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Reckless driving, weapon\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Gun, stolen possession\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Alcohol, resisting arrest\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Attempted murder\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Drugs, license\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Drugs, resisting arrest\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Traffic warrants\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Theft, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Disturbing the peace\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Failure to appear, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Handicap parking\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Theft, drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Indecent exposure\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Traffic warrant\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Breach of peace\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Guns, drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Police interference\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Battery, resisting arrres\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Animal cruelty\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Pimping\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Stalking\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Assasult\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Public urination\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Gun, privacy invasion\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Domestic violence, alcoho\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Gambling, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Drugs, reckless driving\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Reckless endangerment\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;False information\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;DUI,drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Murder\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;DUI, manslaughter\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;DUI, resisting arrest\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Child abuse\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Guns, drugs, reckless dri\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Hit and Run\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Animal neglect\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Coercion, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Resisting officer\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Animal cruelty, drugs\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Battery, alcohol\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Alcohol, assault\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Weapon\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Burglary, assault\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Guns\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;False name\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Manslaughter, child abuse\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Burglary, gun\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;},{\&quot;Category\&quot;:\&quot;Burglary, battery\&quot;,\&quot;arrest_count\&quot;:\&quot;1\&quot;}]&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">response$headers$<span class="st">`</span><span class="dt">content-type</span><span class="st">`</span></code></pre></div>
+<pre><code>## [1] &quot;application/json&quot;</code></pre>
+</section><section id="how-do-you-pronounce-json" class="slide level2">
+<h1>How do <strong>YOU</strong> pronounce JSON?</h1>
+<p>“JSON” of Star Command?</p>
+<p><img src="images/jason_star_command.jpg" alt="JSON of Star Command" /></p>
+</section><section id="convert-to-a-data-frame" class="slide level2">
+<h1>Convert to a data frame</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(jsonlite)
+dfCrime &lt;-<span class="st"> </span><span class="kw">fromJSON</span>(the_content, <span class="dt">simplifyDataFrame =</span>  <span class="ot">TRUE</span>)
+<span class="kw">head</span>(dfCrime)</code></pre></div>
+<pre><code>##             Category arrest_count
+## 1                DUI          186
+## 2              Drugs           93
+## 3  Domestic violence           84
+## 4            Assault           63
+## 5 Disorderly conduct           38
+## 6                Gun           25</code></pre>
+</section><section id="change-the-request" class="slide level2">
+<h1>Change the request</h1>
+<p>Let’s only bring back the top 2 crimes. We can use the <code>modify_url</code> function from <code>httr</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">top2_url &lt;-<span class="st"> </span><span class="kw">modify_url</span>(crimes_url, <span class="dt">query =</span> <span class="kw">list</span>(<span class="dt">limit =</span> <span class="dv">2</span>))
+top2_url</code></pre></div>
+<pre><code>## [1] &quot;http://nflarrest.com/api/v1/crime?limit=2&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">response &lt;-<span class="st"> </span><span class="kw">GET</span>(top2_url)
+
+<span class="co"># Can also do this in one shot</span>
+response &lt;-<span class="st"> </span><span class="kw">GET</span>(crimes_url, <span class="dt">query =</span> <span class="kw">list</span>(<span class="dt">limit =</span> <span class="dv">2</span>))
+
+the_content &lt;-<span class="st"> </span><span class="kw">content</span>(response, <span class="st">&quot;text&quot;</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)
+dfCrime &lt;-<span class="st"> </span><span class="kw">fromJSON</span>(the_content, <span class="dt">simplifyDataFrame =</span>  <span class="ot">TRUE</span>)
+<span class="kw">head</span>(dfCrime)</code></pre></div>
+<pre><code>##   Category arrest_count
+## 1      DUI          186
+## 2    Drugs           93</code></pre>
+</section><section id="use-the-results-to-make-new-requests" class="slide level2">
+<h1>Use the results to make new requests</h1>
+<p>List players who have been arrested for DUI</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">top_crime &lt;-<span class="st"> </span>dfCrime$Category[<span class="dv">1</span>]
+player_crime_url &lt;-<span class="st"> </span><span class="kw">paste0</span>(base_url, <span class="st">&quot;crime/topPlayers/&quot;</span>, top_crime)
+response &lt;-<span class="st"> </span><span class="kw">GET</span>(player_crime_url)
+the_content &lt;-<span class="st"> </span><span class="kw">content</span>(response, <span class="st">&quot;text&quot;</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)
+dfPlayerDUI &lt;-<span class="st"> </span><span class="kw">fromJSON</span>(the_content, <span class="dt">simplifyDataFrame =</span>  <span class="ot">TRUE</span>)
+<span class="kw">head</span>(dfPlayerDUI)</code></pre></div>
+<pre><code>##             Name arrest_count
+## 1  Eric Warfield            3
+## 2    Kenny Mixon            3
+## 3    Eric Wright            2
+## 4  D.J. Williams            2
+## 5 Jermaine Haley            2
+## 6    Jared Allen            2</code></pre>
+</section><section id="writing-your-own-functions" class="slide level2">
+<h1>Writing your own functions</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(dplyr))
+
+GetTeamPlayer &lt;-<span class="st"> </span>function(team){
+  team_player_url &lt;-<span class="st"> &quot;http://nflarrest.com/api/v1/team/topPlayers/&quot;</span>
+  team_player_url &lt;-<span class="st"> </span><span class="kw">paste0</span>(team_player_url, team)
+  response &lt;-<span class="st"> </span><span class="kw">GET</span>(team_player_url)
+  the_content &lt;-<span class="st"> </span><span class="kw">content</span>(response, <span class="st">&quot;text&quot;</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)
+  df &lt;-<span class="st"> </span><span class="kw">fromJSON</span>(the_content, <span class="dt">simplifyDataFrame =</span>  <span class="ot">TRUE</span>)
+  df
+}</code></pre></div>
+</section><section id="your-own-functions-2" class="slide level2">
+<h1>Your own functions (2)</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dfPlayers &lt;-<span class="st"> </span><span class="kw">GetTeamPlayer</span>(<span class="dt">team =</span> <span class="st">&quot;CIN&quot;</span>)
+<span class="kw">head</span>(dfPlayers)</code></pre></div>
+<pre><code>##             Name arrest_count
+## 1    Chris Henry            6
+## 2     Adam Jones            4
+## 3  Cedric Benson            2
+## 4    Steve Foley            2
+## 5   Rey Maualuga            2
+## 6 A.J. Nicholson            2</code></pre>
+</section><section id="create-a-package" class="slide level2">
+<h1>Create a package</h1>
+<p>Wrapping API calls with a function is an easy on-ramp to creating a package.</p>
+</section><section id="crimes-by-position" class="slide level2">
+<h1>Crimes by position</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&quot;./all_arrests.rda&quot;</span>)
+dfCrimesByPosition &lt;-<span class="st"> </span>dfAllArrests %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(Position_name) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">num_arrests =</span> <span class="kw">n</span>()) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(num_arrests))</code></pre></div>
+</section><section id="crimes-by-position-1" class="slide level2">
+<h1>Crimes by position</h1>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="768" /></p>
+</section><section id="httr-is-not-the-only-game-in-town" class="slide level2">
+<h1>httr is <em>not</em> the only game in town</h1>
+<p>rOpenSci also has some packages to work with HTTP.</p>
+<p><a href="https://ropensci.org/packages/#http_tools" class="uri">https://ropensci.org/packages/#http_tools</a></p>
+</section><section id="and-now-lets-see-that-in-python" class="slide level2">
+<h1>And now let’s see that in Python</h1>
+</section><section id="apis-may-transform-data" class="slide level2">
+<h1>APIs may <em>transform</em> data</h1>
+<p>Use an API to build a library of functions.</p>
+<p><a href="https://nf-felon.herokuapp.com/" class="uri">https://nf-felon.herokuapp.com/</a></p>
+</section><section id="public-api-caveats" class="slide level2">
+<h1>Public API caveats</h1>
+<ul>
+<li>Terms of use</li>
+<li>Non-commercial</li>
+<li>Access limits</li>
+<li>Authentication</li>
+</ul>
+</section><section id="so-go-build-some-apis" class="slide level2">
+<h1>So go build some APIs!</h1>
+<ul>
+<li>Seems to be more Python than R, we could even that out</li>
+<li>Great way to get started writing packages</li>
+<li>Build your portfolio</li>
+<li>Help out others!</li>
+<li>Excellent source of fun data to practice techniques</li>
+</ul>
+</section></section>
+<section><section id="thanks-for-listening" class="titleslide slide level1"><h1>Thanks for listening!</h1></section><section id="some-references" class="slide level2">
+<h1>Some References</h1>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html" class="uri">https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html</a></li>
+<li><a href="https://zapier.com/learn/apis/chapter-1-introduction-to-apis/" class="uri">https://zapier.com/learn/apis/chapter-1-introduction-to-apis/</a></li>
+<li><a href="https://httpstatuses.com/" class="uri">https://httpstatuses.com/</a></li>
+<li><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" class="uri">https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html</a></li>
+<li><a href="https://tools.ietf.org/html/rfc5789" class="uri">https://tools.ietf.org/html/rfc5789</a></li>
+<li><a href="https://cran.r-project.org/web/views/WebTechnologies.html" class="uri">https://cran.r-project.org/web/views/WebTechnologies.html</a></li>
+<li><a href="https://www.getpostman.com/" class="uri">https://www.getpostman.com/</a></li>
+<li><a href="https://www.programmableweb.com/category/all/apis" class="uri">https://www.programmableweb.com/category/all/apis</a></li>
+</ul>
+</section><section id="some-apis" class="slide level2">
+<h1>Some APIs</h1>
+<ul>
+<li><a href="http://nflarrest.com/api/" class="uri">http://nflarrest.com/api/</a></li>
+<li><a href="https://www.goodreads.com/api/keys" class="uri">https://www.goodreads.com/api/keys</a></li>
+<li><a href="http://matchbox.io/address-quick-start.html" class="uri">http://matchbox.io/address-quick-start.html</a></li>
+<li><a href="http://open-platform.theguardian.com/" class="uri">http://open-platform.theguardian.com/</a></li>
+<li><a href="http://www.census.gov/data/developers/data-sets/acs-1year.html" class="uri">http://www.census.gov/data/developers/data-sets/acs-1year.html</a></li>
+<li><a href="http://www.computersciencezone.org/50-most-useful-apis-for-developers/" class="uri">http://www.computersciencezone.org/50-most-useful-apis-for-developers/</a></li>
+<li><a href="https://en.wikipedia.org/wiki/List_of_open_APIs" class="uri">https://en.wikipedia.org/wiki/List_of_open_APIs</a></li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="index_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="index_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Transition style
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'index_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
+          { src: 'index_files/reveal.js-3.3.0.1/plugin/zoom-js/zoom.js', async: true },
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

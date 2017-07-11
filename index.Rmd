@@ -1,0 +1,398 @@
+---
+title: "Go Ape for APIs"
+author: "Brian A. Fannin"
+date: "March 11, 2017"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: false
+    css: ./css/revealOpts.css
+    theme: solarized
+    transition: slide
+    center: false
+    reveal_plugins: ["notes", "zoom"]
+---
+
+# What do we mean by API?
+
+<aside class="notes">
+* What do we mean by API?
+* Quick example using an API from R
+* How does the web work?
+* Show postman
+* The httr package
+* Writing R functions to access an API
+</aside>
+
+## In this context
+
+> An API is something I use to retrieve and (maybe) update data.
+
+![data api](images/data_api.png)
+
+<aside class="notes">
+
+* Lots of things from graphics to the file system. ODBC is an API.
+* Data heads mean CRUD, or even just reading
+
+An  API can be lots of things, from a graphics engine, to DLLs, to the OS-dependent things like the file system.
+
+When data heads are talking about an API, they often mean an abstract interface which gives them the ability to extract data from a remote source. That's generic enough that ODBC qualifies as an API.
+</aside>
+
+## The important point:
+
+> The implementation details about how data is accessed and returned to the user are not important to the consumer of the API.   
+
+It just works.
+
+<aside class="notes">
+So, we don't really care 
+</aside>
+
+## Example
+
+```{r }
+library(udapi)
+dfUD <- udapi::get_term("depp")
+dfUD$definition[1:2]
+```
+
+## Basically the same as this
+
+![urban dictionary](images/urban_dictionary.png)
+
+## Web APIs
+
+<aside class="notes">
+So, there's a wide array of data on the web and many different ways to access it. What's the common denominator?
+</aside>
+
+> "Right now, the closest thing we have to a generic API client is a library that sends HTTP requests. This was true in 2007, and it’s still true."
+
+| - RESTful Web APIs
+
+
+# How does HTTP work?
+
+## Your grandfather explains the internet
+
+![http](images/http.png)
+
+## Implications
+
+* Transactional and discrete. A computer sends a __request__ to another computer, which sends back a __response__. End.
+* Stateless, like talking to a really drunk person. You have to keep reintroducing yourselves.
+* May be asynchronous.
+* Probably overheard. Use encryption.
+* In principle, client  and server are not special. In practice, we're usually clients. We send requests and get back responses.
+* Request and response may be broader than information retrieval. May also involve _transformation_ of data like language translation, or model construction (e.g. statistical transformations).
+
+<aside class="notes">
+A computer - which we'll call a client - sends a request to another computer that we'll call a server. The names are somewhat arbitrary. The roles of client and server could be reversed.
+</aside>
+
+## The request 
+
+<span class="left">
+  ![request structure](images/request2.png)
+</span>
+
+<span class="right">
+<ul>
+<li>URL - obvious</li>
+<li>Method - GET, PUT, etc. More on that in a moment.</li>
+<li>Header - Tells the remote computer about how to handle the request. Includes timestamp, source of the request, user and session info. May include authentication data.</li>
+<li>Body - If we're _adding_ or _updating_ data, there's information here.</li>
+</ul>
+</span>
+
+## Methods
+
+| Method  | Function                    |
+|:--------|:----------------------------|
+| GET     | Retrieves a resource        |
+| POST    | Create a new resource       |
+| PUT     | Update an existing resource |
+| PATCH   | Similar to PUT, but may update only certain components of a resource |
+| DELETE  | Remove a resource           |
+| HEAD    | Identical to GET, but does not return body |
+| OPTIONS | Request information about the server |
+
+And there are others.
+
+<aside class="notes">
+The methods are verbs which encompass the full set of CRUD operations. Permissions will be specific to a server.
+</aside>
+
+## The response 
+
+<span class="left">
+  ![response structure](images/response_structure.png)
+</span>
+
+<span class="right">
+<ul>
+<li>Status code - This is important.</li>
+<li>Header - Tells the requesting computer about how to handle the response. This will include things like format of the data.</li>
+<li>Body - This is the good stuff. For data requests, we're probably returning XML, JSON or CSV.</li>
+</ul>
+</span>
+
+## Response status codes
+
+| Number  | Meaning                    |
+|:--------|:----------------------------|
+| 1xx  | Informational           |
+| 2xx     | Success        |
+| 3xx    | Redirection       |
+| 4xx     | Client error |
+| 5xx    | Server error |
+
+https://httpstatuses.com
+
+## This may all be done from a terminal
+
+```
+curl "https://www.goodreads.com/search.xml?key=MY_KEY&q=Richard+Feynman"
+```
+
+## Or in a browser
+
+![browser response](images/browser_response.png)
+
+## Postman
+
+![postman example](images/postman.png)
+
+## Postman example
+
+![postman example](images/postman_example.png)
+
+## Fundamental takeaways
+
+* A web API lets us read data without needing to know how the data is obtained.
+* Request and response objects tell _both_ computers everything they need to know about how the conversation is going.
+* There is nothing magical about how to access a web API. If you can connect to the interwebs, you're good to go. _A browser is a tool that makes HTTP response objects look pretty!_
+
+# Some actual APIs
+
+## rsunlight
+
+<div style="height:400px">
+![sunlight_calls](images/sunlight_api_calls.png)
+</div>
+
+## 
+
+## Where to find APIs
+
+* [Programmable Web](https://www.programmableweb.com/category/all/apis) has a list of over 17,000 APIs!
+* [Python for beginners](http://www.pythonforbeginners.com/api/list-of-python-apis) - Not a big list, but all have Python wrappers
+* [rOpenGov](http://ropengov.github.io/)
+* [Reverse dependencies for httr](https://cran.r-project.org/package=httr)
+
+# The httr package
+
+## The httr package
+
+* Strongly influenced by the python package [`requests`](http://docs.python-requests.org/en/latest/user/quickstart/).
+* Exposes GET, PUT, PUSH, etc as R functions
+
+## Let's access some data!
+
+```{r}
+library(httr)
+
+base_url <- 'http://nflarrest.com/api/v1/'
+crimes_url <- paste0(base_url, 'crime')
+response <- GET(crimes_url)
+```
+
+## The response object
+
+```{r}
+response
+response$status_code
+response$headers$`content-type`
+```
+
+## What did our request look like?
+
+Weirdly, we need to get a response to see this.
+
+```{r}
+req <- response$request
+req
+```
+
+## Adding elements to the request header
+
+This must take place within the HTTP verb function call
+
+```{r}
+response <- GET(crimes_url
+                , user_agent("PirateGrunt/0.1 (FanninQED@Yahoo.com)"))
+```
+
+## Common header fields
+
+* authenticate() - Named parameters for user, password and auth type. Default type is basic
+* user_agent() - `httr` will default to some form of "httr"
+* use_proxy()
+* set_cookies()
+
+
+## content
+
+```{r}
+the_content <- content(response, "text", encoding = "UTF-8")
+typeof(the_content)
+the_content
+response$headers$`content-type`
+```
+
+## How do __YOU__ pronounce JSON?
+
+"JSON" of Star Command?
+
+![JSON of Star Command](images/jason_star_command.jpg)
+
+## Convert to a data frame
+
+```{r }
+library(jsonlite)
+dfCrime <- fromJSON(the_content, simplifyDataFrame =  TRUE)
+head(dfCrime)
+```
+
+## Change the request
+
+Let's only bring back the top 2 crimes. We can use the `modify_url` function from `httr`.
+
+```{r}
+top2_url <- modify_url(crimes_url, query = list(limit = 2))
+top2_url
+
+response <- GET(top2_url)
+
+# Can also do this in one shot
+response <- GET(crimes_url, query = list(limit = 2))
+
+the_content <- content(response, "text", encoding = "UTF-8")
+dfCrime <- fromJSON(the_content, simplifyDataFrame =  TRUE)
+head(dfCrime)
+```
+
+## Use the results to make new requests
+
+List players who have been arrested for DUI
+
+```{r}
+top_crime <- dfCrime$Category[1]
+player_crime_url <- paste0(base_url, "crime/topPlayers/", top_crime)
+response <- GET(player_crime_url)
+the_content <- content(response, "text", encoding = "UTF-8")
+dfPlayerDUI <- fromJSON(the_content, simplifyDataFrame =  TRUE)
+head(dfPlayerDUI)
+```
+
+## Writing your own functions 
+
+```{r}
+suppressPackageStartupMessages(library(dplyr))
+
+GetTeamPlayer <- function(team){
+  team_player_url <- "http://nflarrest.com/api/v1/team/topPlayers/"
+  team_player_url <- paste0(team_player_url, team)
+  response <- GET(team_player_url)
+  the_content <- content(response, "text", encoding = "UTF-8")
+  df <- fromJSON(the_content, simplifyDataFrame =  TRUE)
+  df
+}
+```
+
+## Your own functions (2)
+
+```{r }
+dfPlayers <- GetTeamPlayer(team = "CIN")
+head(dfPlayers)
+```
+
+## Create a package
+
+Wrapping API calls with a function is an easy on-ramp to creating a package.
+
+## Crimes by position
+
+```{r}
+load("./all_arrests.rda")
+dfCrimesByPosition <- dfAllArrests %>% 
+  group_by(Position_name) %>% 
+  summarise(num_arrests = n()) %>% 
+  arrange(desc(num_arrests))
+```
+
+## Crimes by position
+
+```{r echo=FALSE}
+library(ggplot2)
+reorder_size <- function(df) {
+  df <- arrange(df, desc(num_arrests))
+  factor(df$Position_name, levels = df$Position_name)
+}
+plt <- ggplot(dfCrimesByPosition, aes(reorder_size(dfCrimesByPosition), num_arrests)) + geom_bar(stat='identity')
+plt <- plt + theme(axis.text.x = element_text(angle = 20))
+plt + ggplot2::xlab("Position") + ylab("Average arrests")
+```
+
+## httr is _not_ the only game in town
+
+rOpenSci also has some packages to work with HTTP.
+
+https://ropensci.org/packages/#http_tools
+
+## And now let's see that in Python
+
+## APIs may _transform_ data
+
+Use an API to build a library of functions.
+
+https://nf-felon.herokuapp.com/
+
+## Public API caveats
+
+* Terms of use
+* Non-commercial
+* Access limits
+* Authentication
+
+## So go build some APIs!
+
+* Seems to be more Python than R, we could even that out
+* Great way to get started writing packages
+* Build your portfolio
+* Help out others!
+* Excellent source of fun data to practice techniques
+
+# Thanks for listening!
+
+## Some References
+
+* https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html
+* https://zapier.com/learn/apis/chapter-1-introduction-to-apis/
+* https://httpstatuses.com/
+* https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+* https://tools.ietf.org/html/rfc5789
+* https://cran.r-project.org/web/views/WebTechnologies.html
+* https://www.getpostman.com/
+* https://www.programmableweb.com/category/all/apis
+
+## Some APIs
+
+* http://nflarrest.com/api/
+* https://www.goodreads.com/api/keys
+* http://matchbox.io/address-quick-start.html
+* http://open-platform.theguardian.com/
+* http://www.census.gov/data/developers/data-sets/acs-1year.html
+* http://www.computersciencezone.org/50-most-useful-apis-for-developers/
+* https://en.wikipedia.org/wiki/List_of_open_APIs
